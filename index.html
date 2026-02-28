@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>НейроПрофессор: Регистрация</title>
+    <!-- Подключаем Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a; /* Темно-синий фон в стиле киберпанк */
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        .neo-input {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+        }
+        .neo-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+            outline: none;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #38bdf8 0%, #1e40af 100%);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center justify-center min-h-screen">
+
+    <div class="glass-card w-full max-w-md p-8 shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold gradient-text mb-2">Кафедра ИИ</h1>
+            <p class="text-slate-400 text-sm">Введите данные для синхронизации с нейросетью</p>
+        </div>
+
+        <form id="regForm" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1 ml-1">Полное имя (ФИО)</label>
+                <input type="text" id="fio" placeholder="Иванов Иван Иванович" class="neo-input w-full p-3 rounded-xl text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1 ml-1">Логин</label>
+                    <input type="text" id="login" placeholder="user123" class="neo-input w-full p-3 rounded-xl text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1 ml-1">Пароль</label>
+                    <input type="password" id="password" placeholder="••••••••" class="neo-input w-full p-3 rounded-xl text-white">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1 ml-1">Электронная почта</label>
+                <input type="email" id="email" placeholder="example@neuro.com" class="neo-input w-full p-3 rounded-xl text-white">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1 ml-1">Номер телефона</label>
+                <input type="tel" id="phone" placeholder="+7 (999) 999-99-99" class="neo-input w-full p-3 rounded-xl text-white">
+            </div>
+
+            <button type="submit" class="submit-btn w-full py-4 rounded-xl font-bold text-white mt-6 uppercase tracking-wider transition-all">
+                Отправить в нейросеть
+            </button>
+        </form>
+    </div>
+
+    <p class="mt-6 text-slate-500 text-xs text-center">
+        Данные зашифрованы протоколом IQ-3000<br>
+        &copy; 2026 NeuroProfessor Lab
+    </p>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем на все окно
+
+        // Настройка цветов темы из Telegram (адаптация)
+        if (tg.themeParams.button_color) {
+            document.querySelector('.submit-btn').style.background = tg.themeParams.button_color;
+        }
+
+        const form = document.getElementById('regForm');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Собираем данные
+            const data = {
+                fio: document.getElementById('fio').value,
+                login: document.getElementById('login').value,
+                password: document.getElementById('password').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value
+            };
+
+            // Проверка на заполненность (минимум ФИО)
+            if (!data.fio || !data.login) {
+                tg.showAlert("Профессор недоволен! Заполните хотя бы имя и логин.");
+                return;
+            }
+
+            // Отправляем данные боту (закрывает WebApp автоматически)
+            tg.sendData(JSON.stringify(data));
+        });
+    </script>
+</body>
+</html>

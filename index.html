@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СберПортал - Главная</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html" class="logo">СберПортал</a>
+        <nav class="breadcrumb">
+            <a href="index.html">Главная</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="page-title">
+            <h1>Исследуйте коллекции</h1>
+            <p>Выберите интересующую вас категорию</p>
+        </div>
+
+        <div class="cards-grid" id="cards-grid">
+            <!-- Карточки будут добавлены через JavaScript -->
+        </div>
+    </main>
+
+    <script src="utils.js"></script>
+    <script>
+        // =====================================================
+        // БАЗА ДАННЫХ КАТЕГОРИЙ
+        // Поддерживает как пути к файлам, так и base64
+        // =====================================================
+        const categoriesData = [
+            {
+                id: 'nature',
+                name: 'Природа',
+                subtitle: 'Красота окружающего мира',
+                // Можно указать путь к файлу:
+                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600'
+                // Или base64:
+                // image: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...'
+            },
+            {
+                id: 'technology',
+                name: 'Технологии',
+                subtitle: 'Инновации будущего',
+                image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600'
+            },
+            {
+                id: 'architecture',
+                name: 'Архитектура',
+                subtitle: 'Шедевры строительства',
+                image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600'
+            },
+            {
+                id: 'art',
+                name: 'Искусство',
+                subtitle: 'Творческие шедевры',
+                image: 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=600'
+            }
+        ];
+
+        // =====================================================
+        // РЕНДЕРИНГ КАРТОЧЕК
+        // =====================================================
+        function renderCategories() {
+            const grid = document.getElementById('cards-grid');
+            
+            grid.innerHTML = categoriesData.map(cat => {
+                const imageUrl = getMediaUrl(cat.image, 'jpg');
+                return `
+                    <a href="category.html?cat=${cat.id}&name=${encodeURIComponent(cat.name)}" class="card">
+                        <img class="card-image" src="${imageUrl}" alt="${cat.name}">
+                        <div class="card-content">
+                            <h3 class="card-title">${cat.name}</h3>
+                            <p class="card-subtitle">${cat.subtitle}</p>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // Инициализация
+        renderCategories();
+    </script>
+</body>
+</html>

@@ -195,11 +195,7 @@
                 const course = card.dataset.course;
                 
                 // Переход на страницу лабораторных работ с параметрами
-				const urlParams = new URLSearchParams(window.location.search);
-				const categoryId = urlParams.get('cat');
-				const categoryName = urlParams.get('name');
-				window.location.href = `labs_page.html?subject=${itemId}&name=${encodeURIComponent(itemName)}&course=${course}&cat=${categoryId}&catName=${encodeURIComponent(categoryName || '')}`;
-               // window.location.href = `labs_page.html?subject=${itemId}&name=${encodeURIComponent(itemName)}&course=${course}`;
+                window.location.href = `labs_page.html?subject=${itemId}&name=${encodeURIComponent(itemName)}&course=${course}`;
             });
         });
     }

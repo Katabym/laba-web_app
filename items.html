@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Предметы | СберПортал</title>
+    <link rel="stylesheet" href="item.css">
+</head>
+<body>
+
+<div class="header-gradient">
+    <button class="back-button" id="backButton">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Назад к факультетам
+    </button>
+    <h1 id="pageTitle">📚 Предметы</h1>
+    <div class="category-badge" id="categoryBadge">Факультет</div>
+</div>
+
+<div class="main-container">
+    <!-- Поиск и фильтр по курсу -->
+    <div class="search-panel">
+        <div class="search-wrapper">
+            <span class="search-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию или описанию...">
+        </div>
+        <div class="course-wrapper">
+            <span class="course-label">Курс:</span>
+            <select class="course-select" id="courseSelect">
+                <option value="all">Все курсы</option>
+                <option value="1">1 курс</option>
+                <option value="2">2 курс</option>
+                <option value="3">3 курс</option>
+                <option value="4">4 курс</option>
+                <option value="5">5 курс</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="results-count" id="resultsCount">Найдено предметов: <span id="countValue">0</span></div>
+
+    <div class="items-grid" id="itemsGrid"></div>
+</div>
+
+<script>
+    // ============================================================
+    // БАЗА ДАННЫХ ПРЕДМЕТОВ ДЛЯ ВАШИХ ФАКУЛЬТЕТОВ
+    // ============================================================
+    const itemsDatabase = [
+        // ========== ИТУ ==========
+        { id: 1, name: 'Программирование', description: 'Основы Python, алгоритмы', course: 1, categoryId: 'itu', iconType: 'code' },
+        { id: 2, name: 'Программирование', description: 'Объектно-ориентированное программирование, Java', course: 2, categoryId: 'itu', iconType: 'code' },
+        { id: 3, name: 'Программирование', description: 'Веб-разработка, React, Node.js', course: 3, categoryId: 'itu', iconType: 'code' },
+        { id: 4, name: 'Базы данных', description: 'SQL, проектирование БД', course: 2, categoryId: 'itu', iconType: 'server' },
+        { id: 5, name: 'Базы данных', description: 'NoSQL, оптимизация запросов', course: 3, categoryId: 'itu', iconType: 'server' },
+        { id: 6, name: 'Сетевые технологии', description: 'Компьютерные сети, OSI, TCP/IP', course: 3, categoryId: 'itu', iconType: 'globe' },
+        { id: 7, name: 'Операционные системы', description: 'Linux, Windows, процессы', course: 2, categoryId: 'itu', iconType: 'terminal' },
+        
+        // ========== СТРОИТЕЛЬНЫЙ ==========
+        { id: 8, name: 'Строительные материалы', description: 'Свойства материалов, испытания', course: 1, categoryId: 'str', iconType: 'layout' },
+        { id: 9, name: 'Строительные конструкции', description: 'Железобетон, металл', course: 2, categoryId: 'str', iconType: 'layout' },
+        { id: 10, name: 'Сопромат', description: 'Сопротивление материалов', course: 2, categoryId: 'str', iconType: 'calculator' },
+        { id: 11, name: 'Архитектура', description: 'Основы проектирования', course: 3, categoryId: 'str', iconType: 'target' },
+        
+        // ========== УПП ==========
+        { id: 12, name: 'Логистика', description: 'Основы транспортной логистики', course: 2, categoryId: 'upp', iconType: 'chart' },
+        { id: 13, name: 'Управление перевозками', description: 'Организация грузоперевозок', course: 3, categoryId: 'upp', iconType: 'target' },
+        { id: 14, name: 'Транспортная инфраструктура', description: 'Пути сообщения, терминалы', course: 4, categoryId: 'upp', iconType: 'globe' },
+        
+        // ========== ЭЛЕКТРОМЕХАНИЧЕСКИЙ ==========
+        { id: 15, name: 'Электротехника', description: 'Цепи постоянного тока', course: 1, categoryId: 'elm', iconType: 'sparkles' },
+        { id: 16, name: 'Электротехника', description: 'Цепи переменного тока', course: 2, categoryId: 'elm', iconType: 'sparkles' },
+        { id: 17, name: 'Электропривод', description: 'Управление электродвигателями', course: 3, categoryId: 'elm', iconType: 'cpu' },
+        { id: 18, name: 'Автоматика', description: 'Системы автоматического управления', course: 3, categoryId: 'elm', iconType: 'shield' },
+        
+        // ========== ЭНЕРГЕТИЧЕСКИЙ ==========
+        { id: 19, name: 'Теплотехника', description: 'Термодинамика, теплопередача', course: 2, categoryId: 'energ', iconType: 'flask' },
+        { id: 20, name: 'Энергоснабжение', description: 'Электроснабжение предприятий', course: 3, categoryId: 'energ', iconType: 'droplet' },
+        { id: 21, name: 'Возобновляемая энергетика', description: 'Солнечные, ветровые установки', course: 4, categoryId: 'energ', iconType: 'globe' },
+        
+        // ========== ДСМ ==========
+        { id: 22, name: 'Дорожные машины', description: 'Классификация, устройство', course: 2, categoryId: 'dsm', iconType: 'cpu' },
+        { id: 23, name: 'Строительные машины', description: 'Экскаваторы, краны', course: 3, categoryId: 'dsm', iconType: 'layout' },
+        { id: 24, name: 'Механика', description: 'Теоретическая механика', course: 2, categoryId: 'dsm', iconType: 'calculator' },
+        
+        // ========== ЭУП ==========
+        { id: 25, name: 'Экономика', description: 'Микроэкономика', course: 1, categoryId: 'eup', iconType: 'chart' },
+        { id: 26, name: 'Экономика', description: 'Макроэкономика', course: 2, categoryId: 'eup', iconType: 'chart' },
+        { id: 27, name: 'Менеджмент', description: 'Основы управления', course: 2, categoryId: 'eup', iconType: 'target' },
+        { id: 28, name: 'Право', description: 'Гражданское право', course: 3, categoryId: 'eup', iconType: 'book' },
+        
+        // ========== ГУМАНИТАРНЫЙ ==========
+        { id: 29, name: 'История', description: 'История России', course: 1, categoryId: 'gum', iconType: 'book-open' },
+        { id: 30, name: 'Философия', description: 'Основы философии', course: 2, categoryId: 'gum', iconType: 'book' },
+        { id: 31, name: 'Иностранный язык', description: 'Английский язык B1', course: 2, categoryId: 'gum', iconType: 'globe' },
+        { id: 32, name: 'Психология', description: 'Общая психология', course: 3, categoryId: 'gum', iconType: 'sparkles' }
+    ];
+
+    // SVG иконки
+    function getItemIconSvg(iconType) {
+        const icons = {
+            flask: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M10 2v6.5c0 .4-.2.8-.5 1.1L5 14c-.5.6-.5 1.4 0 2l3 3c.6.5 1.4.5 2 0l5-5c.3-.3.5-.7.5-1.1V2h-5z"/><path d="M14 2v6.5c0 .4.2.8.5 1.1L19 14c.5.6.5 1.4 0 2l-3 3c-.6.5-1.4.5-2 0l-5-5"/></svg>`,
+            code: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+            server: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6" y2="6"/></svg>`,
+            terminal: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>`,
+            globe: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+            layout: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>`,
+            calculator: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/></svg>`,
+            target: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+            chart: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+            sparkles: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M12 3L14 8L19 8L15 11L17 16L12 13L7 16L9 11L5 8L10 8L12 3Z"/></svg>`,
+            cpu: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>`,
+            shield: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+            droplet: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
+            book: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+            'book-open': `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`
+        };
+        return icons[iconType] || icons.code;
+    }
+
+    let currentCategoryId = null;
+    let currentCategoryName = '';
+
+    function renderItems() {
+        const grid = document.getElementById('itemsGrid');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const selectedCourse = document.getElementById('courseSelect').value;
+        
+        let items = itemsDatabase.filter(item => item.categoryId === currentCategoryId);
+        
+        if (selectedCourse !== 'all') {
+            items = items.filter(item => item.course === parseInt(selectedCourse));
+        }
+        
+        if (searchTerm) {
+            items = items.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.description.toLowerCase().includes(searchTerm)
+            );
+        }
+        
+        document.getElementById('countValue').textContent = items.length;
+        
+        if (items.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <p>Предметы не найдены</p>
+                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">Попробуйте изменить курс или поисковый запрос</p>
+                </div>
+            `;
+            return;
+        }
+        
+        grid.innerHTML = items.map((item, idx) => `
+            <div class="item-card" data-id="${item.id}" data-name="${escapeHtml(item.name)}" data-course="${item.course}" style="animation-delay: ${idx * 0.03}s">
+                <div class="card-inner">
+                    <div class="card-left">
+                        <div class="item-icon">
+                            ${getItemIconSvg(item.iconType)}
+                        </div>
+                        <div class="item-info">
+                            <h3>${escapeHtml(item.name)}</h3>
+                            <p>${escapeHtml(item.description)}</p>
+                        </div>
+                    </div>
+                    <div class="course-badge">
+                        🎓 ${item.course} курс
+                    </div>
+                    <div class="chevron-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.item-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const itemName = card.dataset.name;
+                const course = card.dataset.course;
+                showToast(`📖 ${itemName} (${course} курс)`);
+            });
+        });
+    }
+    
+    function showToast(message) {
+        const existing = document.querySelector('.toast-message');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        if (window.navigator?.vibrate) window.navigator.vibrate(30);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+    }
+    
+    function init() {
+        const params = new URLSearchParams(window.location.search);
+        currentCategoryId = params.get('cat');
+        currentCategoryName = params.get('name');
+        
+        // Если параметры не переданы, показываем сообщение
+        if (!currentCategoryId) {
+            document.getElementById('pageTitle').innerHTML = `❌ Ошибка`;
+            document.getElementById('categoryBadge').textContent = 'Факультет не выбран';
+            document.getElementById('itemsGrid').innerHTML = `
+                <div class="empty-state">
+                    <p>Пожалуйста, выберите факультет на главной странице</p>
+                    <button class="back-button" style="margin-top: 1rem;" onclick="window.location.href='index.html'">Вернуться</button>
+                </div>
+            `;
+            return;
+        }
+        
+        document.getElementById('pageTitle').innerHTML = `📚 ${currentCategoryName || 'Предметы'}`;
+        document.getElementById('categoryBadge').textContent = currentCategoryName || 'Факультет';
+        
+        renderItems();
+        
+        document.getElementById('searchInput').addEventListener('input', renderItems);
+        document.getElementById('courseSelect').addEventListener('change', renderItems);
+        document.getElementById('backButton').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    }
+    
+    init();
+</script>
+</body>
+</html>

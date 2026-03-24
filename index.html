@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Каталог товаров | СберПортал</title>
-	<link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -29,7 +29,7 @@
         <div class="info-steps">
             <div class="step-item">
                 <div class="step-number">1</div>
-                <span>Выберите категорию и товар</span>
+                <span>Выберите факультет, предмет и работу</span>
             </div>
             <div class="step-item">
                 <div class="step-number">2</div>
@@ -51,198 +51,92 @@
 
 <script>
     // ============================================================
-    // ДАННЫЕ КАТЕГОРИЙ (8 штук) с иконками и описаниями
-    // Полностью соответствует стилю React-компонента
+    // ДАННЫЕ КАТЕГОРИЙ (8 факультетов)
     // ============================================================
     const categories = [
         {
             id: 'itu',
             name: 'ИТУ',
-            description: 'Лабораторное оборудование и реагенты',
+            description: 'Информационно-технологический университет',
             icon: 'FlaskConical',
             iconEmoji: '💻'
         },
         {
-            id: 'documents',
+            id: 'str',
             name: 'Строительный',
-            description: 'Строительный',
+            description: 'Строительный факультет',
             icon: 'FileText',
             iconEmoji: '📄'
         },
         {
-            id: 'development',
-            name: 'Программирование',
-            description: 'Код, скрипты, фреймворки',
+            id: 'upp',
+            name: 'УПП',
+            description: 'Управление процессами перевозок',
             icon: 'Code',
             iconEmoji: '💻'
         },
         {
-            id: 'education',
-            name: 'Образование',
-            description: 'Книги, курсы, методические материалы',
+            id: 'elm',
+            name: 'Электромеханический',
+            description: 'Электромеханический факультет',
             icon: 'BookOpen',
             iconEmoji: '📖'
         },
         {
-            id: 'ai_tools',
-            name: 'AI инструменты',
-            description: 'Нейросети, промты, автоматизация',
+            id: 'energ',
+            name: 'Энергетический',
+            description: 'Энергетический факультет',
             icon: 'FlaskConical',
             iconEmoji: '🤖'
         },
         {
-            id: 'design',
-            name: 'Дизайн',
-            description: 'Шаблоны, UI kits, графика',
+            id: 'dsm',
+            name: 'ДСМ',
+            description: 'Дорожно-строительные машины',
             icon: 'BookOpen',
             iconEmoji: '🎨'
         },
         {
-            id: 'business',
-            name: 'Бизнес-шаблоны',
-            description: 'Презентации, стратегии, отчеты',
+            id: 'eup',
+            name: 'ЭУП',
+            description: 'Экономика, управление и право',
             icon: 'FileText',
             iconEmoji: '📊'
         },
         {
-            id: 'security',
-            name: 'Кибербезопасность',
-            description: 'Чек-листы, гайды, инструменты',
+            id: 'gum',
+            name: 'Гуманитарный',
+            description: 'Гуманитарный факультет',
             icon: 'Code',
             iconEmoji: '🔒'
         }
     ];
-	
-	
-	function getIconHtml(categoryId, iconEmoji) {
-    // Здесь укажите пути к вашим JPG изображениям для каждой категории
-    const iconImages = {
-        'itu': './materials/fakults/ITU.jpg',
-        'documents': 'images/documents.jpg',
-        'development': 'images/development.jpg',
-        'education': 'images/education.jpg',
-        'ai_tools': 'images/ai_tools.jpg',
-        'design': 'images/design.jpg',
-        'business': 'images/business.jpg',
-        'security': 'images/security.jpg'
-    };
     
-    const imagePath = iconImages[categoryId] || 'images/default.jpg';
-    
-    return `<img src="${imagePath}" alt="icon" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.875rem;">`;
-}
-	
-    // Генерация SVG иконок на основе типа (как lucide-react но нативная реализация)
-    function getIconSvg(iconType, color = 'currentColor') {
-        // Создаем простые SVG иконки в стиле lucide
-        switch (iconType) {
-            case 'FlaskConical':
-                return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10 2v6.5c0 .4-.2.8-.5 1.1L5 14c-.5.6-.5 1.4 0 2l3 3c.6.5 1.4.5 2 0l5-5c.3-.3.5-.7.5-1.1V2h-5z"/>
-                            <path d="M14 2v6.5c0 .4.2.8.5 1.1L19 14c.5.6.5 1.4 0 2l-3 3c-.6.5-1.4.5-2 0l-5-5"/>
-                        </svg>`;
-            case 'FileText':
-                return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10 9 9 9 8 9"/>
-                        </svg>`;
-            case 'Code':
-                return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="16 18 22 12 16 6"/>
-                            <polyline points="8 6 2 12 8 18"/>
-                        </svg>`;
-            case 'BookOpen':
-                return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                        </svg>`;
-            default:
-                return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="16"/>
-                            <line x1="8" y1="12" x2="16" y2="12"/>
-                        </svg>`;
-        }
-    }
-
-    // Функция для показа уведомления (haptic feedback + toast)
-    function showToast(message, isSuccess = true) {
-        // Удаляем предыдущий тост, если есть
-        const existingToast = document.querySelector('.toast-message');
-        if (existingToast) existingToast.remove();
+    function getIconHtml(categoryId, iconEmoji) {
+        const iconImages = {
+            'itu': './materials/fakults/ITU.jpg',
+            'str': './materials/fakults/STR.jpg',
+            'upp': './materials/fakults/UPP.jpg',
+            'elm': './materials/fakults/ELM.jpg',
+            'energ': './materials/fakults/ENERG.jpg',
+            'dsm': './materials/fakults/DSM.jpg',
+            'eup': './materials/fakults/EUP.jpg',
+            'gum': './materials/fakults/GUM.jpg'
+        };
         
-        const toast = document.createElement('div');
-        toast.className = 'toast-message';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        // Триггер анимации
-        setTimeout(() => toast.classList.add('show'), 10);
-        
-        // Вибрация (haptic feedback) если поддерживается
-        if (window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(50);
-        }
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 2000);
+        const imagePath = iconImages[categoryId] || 'images/default.jpg';
+        return `<img src="${imagePath}" alt="icon" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.875rem;">`;
     }
     
-    // Получение имени пользователя (имитация Telegram контекста / просто приветствие)
-    // В нативном варианте можно получить из URL параметров или localStorage
-    function getUserName() {
-        // Можно подставить имя из локального хранилища, но для демо создадим приветствие
-        // как в React компоненте: user?.first_name ? ... 
-        let firstName = null;
-        // Пытаемся получить из параметров URL (для интеграции с TG WebApp)
-        const urlParams = new URLSearchParams(window.location.search);
-        const tgUser = urlParams.get('tg_user');
-        if (tgUser) {
-            try {
-                const userObj = JSON.parse(decodeURIComponent(tgUser));
-                if (userObj.first_name) firstName = userObj.first_name;
-            } catch(e) { console.warn(e); }
-        }
-        // Или проверяем window.Telegram?.WebApp
-        if (window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name) {
-            firstName = window.Telegram.WebApp.initDataUnsafe.user.first_name;
-        }
-        // Или используем localStorage тестовое
-        const storedName = localStorage.getItem('demo_user_name');
-        if (storedName && !firstName) firstName = storedName;
-        
-        if (firstName) {
-            return `Привет, ${firstName}! 👋`;
-        }
-        return 'Добро пожаловать! 👋';
-    }
-    
-    // Эмуляция hapticFeedback и hideBackButton (для нативного веба просто симулируем)
-    // Функция навигации при клике на категорию
+    // Функция навигации при клике на факультет - РЕАЛЬНЫЙ ПЕРЕХОД
     function handleCategoryClick(categoryId, categoryName) {
-        // haptic feedback эффект (вибрация + тост)
+        // haptic feedback эффект
         if (window.navigator && window.navigator.vibrate) {
             window.navigator.vibrate(30);
         }
-        // показываем уведомление как в React: hapticFeedback('success') + навигация
-        showToast(`📁 Категория: ${categoryName}`, true);
         
-        // Имитируем переход на страницу категории (можно изменить на реальный роутинг)
-        // В оригинале: navigate(`/category/${categoryId}`);
-        // Здесь добавим задержку для визуального эффекта, затем симуляция перехода
-        setTimeout(() => {
-            // можно вывести в консоль или сделать реальный переход (если есть другая страница)
-            console.log(`[Navigation] Переход в категорию: ${categoryId} — ${categoryName}`);
-            // Для демонстрации просто покажем alert-like toast
-            showToast(`✨ Открываю раздел "${categoryName}"`, false);
-            // В реальном приложении тут был бы window.location.href = `/category/${categoryId}`
-            // Но так как это одна страница, просто имитируем
-        }, 150);
+        // РЕАЛЬНЫЙ ПЕРЕХОД на страницу предметов с параметрами
+        window.location.href = `items.html?cat=${categoryId}&name=${encodeURIComponent(categoryName)}`;
     }
     
     // Рендер всех категорий (8 блоков)
@@ -252,10 +146,6 @@
         
         let html = '';
         categories.forEach((cat, idx) => {
-            // выбираем тип иконки (icon) или fallback
-            // const iconType = cat.icon;
-            // const iconSvg = getIconSvg(iconType);
-            // Делаем атрибут data для идентификации
             html += `
                 <div class="category-card" data-id="${cat.id}" data-name="${escapeHtml(cat.name)}" data-index="${idx}">
                     <div class="card-inner">
@@ -284,7 +174,6 @@
         const cards = document.querySelectorAll('.category-card');
         cards.forEach(card => {
             card.addEventListener('click', (e) => {
-                // Не даем всплывать, чтобы случайно не сработало дважды
                 e.stopPropagation();
                 const catId = card.getAttribute('data-id');
                 const catName = card.getAttribute('data-name');
@@ -295,7 +184,6 @@
         });
     }
     
-    // Helper для экранирования
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -303,19 +191,58 @@
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
         });
     }
     
-    // Установка приветствия и поддержки
+    function showToast(message) {
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(50);
+        }
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+    
+    function getUserName() {
+        let firstName = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const tgUser = urlParams.get('tg_user');
+        if (tgUser) {
+            try {
+                const userObj = JSON.parse(decodeURIComponent(tgUser));
+                if (userObj.first_name) firstName = userObj.first_name;
+            } catch(e) { console.warn(e); }
+        }
+        if (window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name) {
+            firstName = window.Telegram.WebApp.initDataUnsafe.user.first_name;
+        }
+        const storedName = localStorage.getItem('demo_user_name');
+        if (storedName && !firstName) firstName = storedName;
+        
+        if (firstName) {
+            return `Привет, ${firstName}! 👋`;
+        }
+        return 'Добро пожаловать! 👋';
+    }
+    
     function setupUI() {
         const greetingEl = document.getElementById('greetingMessage');
         if (greetingEl) {
             greetingEl.textContent = getUserName();
         }
         
-        // Копирование ссылки поддержки при клике
         const supportEl = document.getElementById('supportUsername');
         if (supportEl) {
             supportEl.addEventListener('click', () => {
@@ -329,30 +256,23 @@
                 } else {
                     showToast(`Напишите в поддержку: ${supportText}`, false);
                 }
-                // haptic
                 if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(20);
             });
         }
     }
     
-    // Инициализация приложения
     function init() {
         renderCategories();
         setupUI();
         
-        // Эмуляция hideBackButton (просто для логики: в нативном вебе нет кнопки назад как в Telegram)
-        // Сообщаем в консоль, что backButton скрыт (аналог useTelegram)
         if (window.Telegram?.WebApp) {
             try {
                 window.Telegram.WebApp.BackButton.hide();
                 window.Telegram.WebApp.expand();
             } catch(e) { console.warn('Telegram WebApp не доступен'); }
-        } else {
-            console.log('[Demo] Режим без Telegram: backButton скрыт (эмуляция)');
         }
     }
     
-    // Запускаем после загрузки DOM
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

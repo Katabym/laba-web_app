@@ -50,6 +50,31 @@
 </div>
 
 <script>
+let tg = window.Telegram?.WebApp;
+
+if (tg) {
+    tg.ready();
+}
+
+const params = new URLSearchParams(window.location.search);
+const needSendOrder = params.get('send_order');
+
+if (needSendOrder === '1' && tg && tg.sendData) {
+    const rawOrder = localStorage.getItem('pendingOrderData');
+
+    if (rawOrder) {
+        try {
+            tg.sendData(rawOrder);
+            localStorage.removeItem('pendingOrderData');
+            tg.close();
+        } catch (e) {
+            console.error('Ошибка отправки данных в Telegram:', e);
+            alert('Ошибка отправки заказа');
+        }
+    } else {
+        alert('Нет данных заказа для отправки');
+    }
+}
     // ============================================================
     // ДАННЫЕ КАТЕГОРИЙ (8 факультетов)
     // ============================================================

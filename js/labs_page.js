@@ -505,7 +505,25 @@ function showPaymentModal() {
     });
 }
 
+
 document.getElementById('orderBtn').addEventListener('click', () => {
+    if (cart.length === 0) {
+        showToast('Корзина пуста. Добавьте лабораторные работы');
+        return;
+    }
+
+    const orderData = {
+        total_amount: calculateCartTotalNumber(),
+        items: cart
+    };
+
+    localStorage.setItem('pendingOrderData', JSON.stringify(orderData));
+
+    // Возвращаемся на стартовую страницу WebApp
+    window.location.href = 'index.html?send_order=1';
+});
+
+/* document.getElementById('orderBtn').addEventListener('click', () => {
     console.log("click orderBtn");
 
     if (!tg) {
@@ -527,7 +545,7 @@ document.getElementById('orderBtn').addEventListener('click', () => {
         console.error("sendData error:", e);
         alert("sendData error: " + e.message);
     }
-});
+}); */
 
 // Оформление заказа
 /* document.getElementById('orderBtn').addEventListener('click', () => {

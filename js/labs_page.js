@@ -504,23 +504,50 @@ function showPaymentModal() {
         modal.remove();
     });
 }
+const tg = window.Telegram?.WebApp;
 
+if (tg) {
+	tg.ready();
+	tg.expand();
 
+    
 document.getElementById('orderBtn').addEventListener('click', () => {
     if (cart.length === 0) {
         showToast('Корзина пуста. Добавьте лабораторные работы');
         return;
     }
 
+    const tg = window.Telegram?.WebApp;
+
+    if (!tg || typeof tg.sendData !== 'function') {
+        showToast('Telegram WebApp недоступен');
+        return;
+    }
+
     const orderData = {
+        data_type: 'cart_order',
+        category_id: currentCategoryId,
+        category_name: currentCategoryName,
+        subject_id: currentSubjectId,
+        subject_name: currentSubjectName,
         total_amount: calculateCartTotalNumber(),
-        items: cart
+        items: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price
+        }))
     };
 
-    localStorage.setItem('pendingOrderData', JSON.stringify(orderData));
+    try {
+        tg.sendData(JSON.stringify(orderData));
+        showToast('Заказ отправлен');
 
-    // Возвращаемся на стартовую страницу WebApp
-    window.location.href = 'index.html?send_order=1';
+        setTimeout(() => {
+            tg.close();
+        }, 200);
+    } catch (e) {
+        showToast('Ошибка отправки заказа');
+    }
 });
 
 /* document.getElementById('orderBtn').addEventListener('click', () => {

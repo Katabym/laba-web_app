@@ -42,6 +42,12 @@ let tg = window.Telegram?.WebApp;
 if (tg) {
     tg.ready();
 }
+console.log("window.Telegram =", window.Telegram);
+console.log("tg =", tg);
+console.log("initData =", tg?.initData);
+console.log("initDataUnsafe =", tg?.initDataUnsafe);
+console.log("platform =", tg?.platform);
+console.log("version =", tg?.version);
 
 // Получаем параметры из URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -499,8 +505,32 @@ function showPaymentModal() {
     });
 }
 
-// Оформление заказа
 document.getElementById('orderBtn').addEventListener('click', () => {
+    console.log("click orderBtn");
+
+    if (!tg) {
+        alert("tg not found");
+        return;
+    }
+
+    console.log("tg.sendData exists:", typeof tg.sendData);
+    console.log("initData:", tg.initData);
+    console.log("initDataUnsafe:", tg.initDataUnsafe);
+
+    try {
+        tg.sendData(JSON.stringify({
+            total_amount: 123,
+            items: [{ name: "Тест", price: 123 }]
+        }));
+        alert("sendData called");
+    } catch (e) {
+        console.error("sendData error:", e);
+        alert("sendData error: " + e.message);
+    }
+});
+
+// Оформление заказа
+/* document.getElementById('orderBtn').addEventListener('click', () => {
     if (cart.length === 0) {
         showToast('Корзина пуста. Добавьте лабораторные работы');
         return;
@@ -518,8 +548,8 @@ document.getElementById('orderBtn').addEventListener('click', () => {
     };
 
     tg.sendData(JSON.stringify(orderData));
-    tg.close();
-});
+    //tg.close();
+}); */
 
 function showToast(message) {
     const toast = document.createElement('div');

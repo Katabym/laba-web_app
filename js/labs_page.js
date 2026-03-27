@@ -1,5 +1,4 @@
-let tg = window.Telegram.WebApp;
-tg.ready();
+
 
 // ============================================================
 // ДАННЫЕ ЛАБОРАТОРНЫХ РАБОТ С ПРИВЯЗКОЙ К ПРЕДМЕТАМ (subjectId)
@@ -37,6 +36,12 @@ let currentSubjectId = null;
 let currentSubjectName = '';
 let currentCategoryId = '';
 let currentCategoryName = '';
+
+let tg = window.Telegram?.WebApp;
+
+if (tg) {
+    tg.ready();
+}
 
 // Получаем параметры из URL
 const urlParams = new URLSearchParams(window.location.search);

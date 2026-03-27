@@ -37,10 +37,11 @@ let currentSubjectName = '';
 let currentCategoryId = '';
 let currentCategoryName = '';
 
-let tg = window.Telegram?.WebApp;
+const tg = window.Telegram?.WebApp;
 
 if (tg) {
-    tg.ready();
+	tg.ready();
+	tg.expand();
 }
 console.log("window.Telegram =", window.Telegram);
 console.log("tg =", tg);
@@ -504,11 +505,7 @@ function showPaymentModal() {
         modal.remove();
     });
 }
-const tg = window.Telegram?.WebApp;
 
-if (tg) {
-	tg.ready();
-	tg.expand();
 
     
 document.getElementById('orderBtn').addEventListener('click', () => {

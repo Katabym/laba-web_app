@@ -13,14 +13,12 @@
         <span>📚</span> Каталог товаров
     </h1>
     <div class="greeting" id="greetingMessage">Добро пожаловать! 👋</div>
-    <div class="header-sub">Выберите ваш факультет</div>
+    <div class="header-sub" id="headerSubText">Выберите ваш факультет</div>
 </div>
 
 <div class="main-container">
-    <!-- Сетка категорий (8 блоков) -->
     <div class="categories-grid" id="categoriesGrid"></div>
 
-    <!-- Информационная карточка: как это работает -->
     <div class="info-card">
         <div class="info-title">
             <span style="font-size: 1.4rem;">💡</span>
@@ -33,16 +31,15 @@
             </div>
             <div class="step-item">
                 <div class="step-number">2</div>
-                <span>Нажмите "Купить" и оплатите</span>
+                <span>На странице лабораторных нажмите "Оформить заказ"</span>
             </div>
             <div class="step-item">
                 <div class="step-number">3</div>
-                <span>Получите файл автоматически после оплаты</span>
+                <span>Заказ автоматически отправится в Telegram</span>
             </div>
         </div>
     </div>
 
-    <!-- Поддержка -->
     <div class="support-block">
         <p>Нужна помощь? Напишите в поддержку</p>
         <div class="support-username" id="supportUsername">@support_username</div>
@@ -50,154 +47,181 @@
 </div>
 
 <script>
-let tg = window.Telegram?.WebApp;
+    const tg = window.Telegram?.WebApp || null;
 
-if (tg) {
-    tg.ready();
-}
-
-const params = new URLSearchParams(window.location.search);
-const needSendOrder = params.get('send_order');
-
-if (needSendOrder === '1' && tg && tg.sendData) {
-    const rawOrder = localStorage.getItem('pendingOrderData');
-
-    if (rawOrder) {
+    if (tg) {
         try {
-            tg.sendData(rawOrder);
-            localStorage.removeItem('pendingOrderData');
-            tg.close();
+            tg.ready();
         } catch (e) {
-            console.error('Ошибка отправки данных в Telegram:', e);
-            alert('Ошибка отправки заказа');
+            console.warn('Ошибка tg.ready()', e);
         }
-    } else {
-        alert('Нет данных заказа для отправки');
     }
-}
-    // ============================================================
-    // ДАННЫЕ КАТЕГОРИЙ (8 факультетов)
-    // ============================================================
+
     const categories = [
         {
             id: 'itu',
             name: 'ИТУ',
             description: 'Информационно-технологический университет',
-            icon: 'FlaskConical',
             iconEmoji: '💻'
         },
         {
             id: 'str',
             name: 'Строительный',
             description: 'Строительный факультет',
-            icon: 'FileText',
             iconEmoji: '📄'
         },
         {
             id: 'upp',
             name: 'УПП',
             description: 'Управление процессами перевозок',
-            icon: 'Code',
             iconEmoji: '💻'
         },
         {
             id: 'elm',
             name: 'Электромеханический',
             description: 'Электромеханический факультет',
-            icon: 'BookOpen',
             iconEmoji: '📖'
         },
         {
             id: 'energ',
             name: 'Энергетический',
             description: 'Энергетический факультет',
-            icon: 'FlaskConical',
             iconEmoji: '🤖'
         },
         {
             id: 'dsm',
             name: 'ДСМ',
             description: 'Дорожно-строительные машины',
-            icon: 'BookOpen',
             iconEmoji: '🎨'
         },
         {
             id: 'eup',
             name: 'ЭУП',
             description: 'Экономика, управление и право',
-            icon: 'FileText',
             iconEmoji: '📊'
         },
         {
             id: 'gum',
             name: 'Гуманитарный',
             description: 'Гуманитарный факультет',
-            icon: 'Code',
             iconEmoji: '🔒'
         }
     ];
-    
-    function getIconHtml(categoryId, iconEmoji) {
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>"]/g, function(m) {
+            return ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;'
+            })[m] || m;
+        });
+    }
+
+    function getIconHtml(categoryId) {
         const iconImages = {
-            'itu': './materials/fakults/ITU.jpg',
-            'str': './materials/fakults/STR.jpg',
-            'upp': './materials/fakults/UPP.jpg',
-            'elm': './materials/fakults/ELM.jpg',
-            'energ': './materials/fakults/ENERG.jpg',
-            'dsm': './materials/fakults/DSM.jpg',
-            'eup': './materials/fakults/EUP.jpg',
-            'gum': './materials/fakults/GUM.jpg'
+            itu: './materials/fakults/ITU.jpg',
+            str: './materials/fakults/STR.jpg',
+            upp: './materials/fakults/UPP.jpg',
+            elm: './materials/fakults/ELM.jpg',
+            energ: './materials/fakults/ENERG.jpg',
+            dsm: './materials/fakults/DSM.jpg',
+            eup: './materials/fakults/EUP.jpg',
+            gum: './materials/fakults/GUM.jpg'
         };
-        
-        const imagePath = iconImages[categoryId] || 'images/default.jpg';
+
+        const imagePath = iconImages[categoryId] || './materials/fakults/default.jpg';
+
         return `<img src="${imagePath}" alt="icon" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.875rem;">`;
     }
-    
-    // Функция навигации при клике на факультет - РЕАЛЬНЫЙ ПЕРЕХОД
-    function handleCategoryClick(categoryId, categoryName) {
-        // haptic feedback эффект
-        if (window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(30);
-        }
-        
-        // РЕАЛЬНЫЙ ПЕРЕХОД на страницу предметов с параметрами
-        window.location.href = `items.html?cat=${categoryId}&name=${encodeURIComponent(categoryName)}`;
-		// window.location.href = `new_item.html?cat=${categoryId}&name=${encodeURIComponent(categoryName)}`;
 
+    function showToast(message) {
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) existingToast.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 10);
+
+        if (navigator.vibrate) {
+            navigator.vibrate(40);
+        }
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2200);
     }
-    
-    // Рендер всех категорий (8 блоков)
+
+    function getUserName() {
+        let firstName = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tgUser = urlParams.get('tg_user');
+
+        if (tgUser) {
+            try {
+                const userObj = JSON.parse(decodeURIComponent(tgUser));
+                if (userObj.first_name) firstName = userObj.first_name;
+            } catch (e) {
+                console.warn('Ошибка чтения tg_user', e);
+            }
+        }
+
+        if (window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name) {
+            firstName = window.Telegram.WebApp.initDataUnsafe.user.first_name;
+        }
+
+        const storedName = localStorage.getItem('demo_user_name');
+        if (storedName && !firstName) {
+            firstName = storedName;
+        }
+
+        return firstName ? `Привет, ${firstName}! 👋` : 'Добро пожаловать! 👋';
+    }
+
+    function handleCategoryClick(categoryId, categoryName) {
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
+        }
+
+        localStorage.setItem('lastCategoryId', categoryId);
+        localStorage.setItem('lastCategoryName', categoryName);
+
+        window.location.href = `items.html?cat=${encodeURIComponent(categoryId)}&name=${encodeURIComponent(categoryName)}`;
+    }
+
     function renderCategories() {
         const container = document.getElementById('categoriesGrid');
         if (!container) return;
-        
-        let html = '';
-        categories.forEach((cat, idx) => {
-            html += `
-                <div class="category-card" data-id="${cat.id}" data-name="${escapeHtml(cat.name)}" data-index="${idx}">
-                    <div class="card-inner">
-                        <div class="card-left">
-                            <div class="icon-wrapper">
-                                ${getIconHtml(cat.id, cat.iconEmoji)}
-                            </div>
-                            <div class="category-info">
-                                <h3>${escapeHtml(cat.name)}</h3>
-                                <p>${escapeHtml(cat.description)}</p>
-                            </div>
+
+        container.innerHTML = categories.map((cat, idx) => `
+            <div class="category-card" data-id="${escapeHtml(cat.id)}" data-name="${escapeHtml(cat.name)}" data-index="${idx}">
+                <div class="card-inner">
+                    <div class="card-left">
+                        <div class="icon-wrapper">
+                            ${getIconHtml(cat.id)}
                         </div>
-                        <div class="chevron-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
+                        <div class="category-info">
+                            <h3>${escapeHtml(cat.name)}</h3>
+                            <p>${escapeHtml(cat.description)}</p>
                         </div>
                     </div>
+                    <div class="chevron-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
                 </div>
-            `;
-        });
-        
-        container.innerHTML = html;
-        
-        // Добавляем обработчики кликов на каждую карточку
+            </div>
+        `).join('');
+
         const cards = document.querySelectorAll('.category-card');
         cards.forEach(card => {
             card.addEventListener('click', (e) => {
@@ -210,96 +234,107 @@ if (needSendOrder === '1' && tg && tg.sendData) {
             });
         });
     }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    function showToast(message) {
-        const existingToast = document.querySelector('.toast-message');
-        if (existingToast) existingToast.remove();
-        
-        const toast = document.createElement('div');
-        toast.className = 'toast-message';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => toast.classList.add('show'), 10);
-        
-        if (window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(50);
-        }
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 2000);
-    }
-    
-    function getUserName() {
-        let firstName = null;
-        const urlParams = new URLSearchParams(window.location.search);
-        const tgUser = urlParams.get('tg_user');
-        if (tgUser) {
-            try {
-                const userObj = JSON.parse(decodeURIComponent(tgUser));
-                if (userObj.first_name) firstName = userObj.first_name;
-            } catch(e) { console.warn(e); }
-        }
-        if (window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name) {
-            firstName = window.Telegram.WebApp.initDataUnsafe.user.first_name;
-        }
-        const storedName = localStorage.getItem('demo_user_name');
-        if (storedName && !firstName) firstName = storedName;
-        
-        if (firstName) {
-            return `Привет, ${firstName}! 👋`;
-        }
-        return 'Добро пожаловать! 👋';
-    }
-    
+
     function setupUI() {
         const greetingEl = document.getElementById('greetingMessage');
         if (greetingEl) {
             greetingEl.textContent = getUserName();
         }
-        
+
         const supportEl = document.getElementById('supportUsername');
         if (supportEl) {
             supportEl.addEventListener('click', () => {
-                const supportText = supportEl.textContent;
+                const supportText = supportEl.textContent.trim();
+
                 if (navigator.clipboard && supportText) {
-                    navigator.clipboard.writeText(supportText).then(() => {
-                        showToast(`Скопировано: ${supportText}`, true);
-                    }).catch(() => {
-                        showToast(`Поддержка: ${supportText}`, false);
-                    });
+                    navigator.clipboard.writeText(supportText)
+                        .then(() => showToast(`Скопировано: ${supportText}`))
+                        .catch(() => showToast(`Поддержка: ${supportText}`));
                 } else {
-                    showToast(`Напишите в поддержку: ${supportText}`, false);
+                    showToast(`Поддержка: ${supportText}`);
                 }
-                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(20);
+
+                if (navigator.vibrate) {
+                    navigator.vibrate(20);
+                }
             });
         }
     }
-    
+
+    function sendPendingOrderIfNeeded() {
+        const params = new URLSearchParams(window.location.search);
+        const needSendOrder = params.get('send_order');
+
+        if (needSendOrder !== '1') {
+            return;
+        }
+
+        const headerSub = document.getElementById('headerSubText');
+        if (headerSub) {
+            headerSub.textContent = 'Отправка заказа в Telegram...';
+        }
+
+        const rawOrder = localStorage.getItem('pendingOrderData');
+
+        if (!rawOrder) {
+            showToast('Нет данных заказа для отправки');
+            console.warn('pendingOrderData отсутствует');
+            return;
+        }
+
+        if (!tg || typeof tg.sendData !== 'function') {
+            showToast('Telegram WebApp недоступен');
+            console.error('tg.sendData недоступен');
+            return;
+        }
+
+        try {
+            const parsed = JSON.parse(rawOrder);
+
+            const orderData = {
+                data_type: 'cart_order',
+                total_amount: parsed.total_amount || 0,
+                items: Array.isArray(parsed.items) ? parsed.items : [],
+                created_at: new Date().toISOString()
+            };
+
+            tg.sendData(JSON.stringify(orderData));
+            localStorage.removeItem('pendingOrderData');
+
+            showToast('Заказ отправлен');
+
+            setTimeout(() => {
+                try {
+                    tg.close();
+                } catch (e) {
+                    console.warn('Не удалось закрыть WebApp', e);
+                }
+            }, 300);
+
+        } catch (e) {
+            console.error('Ошибка отправки данных в Telegram:', e);
+            showToast('Ошибка отправки заказа');
+        }
+    }
+
+    function initTelegramUI() {
+        if (!window.Telegram?.WebApp) return;
+
+        try {
+            window.Telegram.WebApp.BackButton.hide();
+            window.Telegram.WebApp.expand();
+        } catch (e) {
+            console.warn('Telegram WebApp UI error', e);
+        }
+    }
+
     function init() {
         renderCategories();
         setupUI();
-        
-        if (window.Telegram?.WebApp) {
-            try {
-                window.Telegram.WebApp.BackButton.hide();
-                window.Telegram.WebApp.expand();
-            } catch(e) { console.warn('Telegram WebApp не доступен'); }
-        }
+        initTelegramUI();
+        sendPendingOrderIfNeeded();
     }
-    
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
